@@ -122,9 +122,12 @@ class Tool:
         if args_schema is None:
             args_schema = annotations_to_schema(func)
         self.args_schema = args_schema
+        self.signature = inspect.signature(func)
 
     def __call__(self, *args: tuple, **kwargs: dict) -> Any:
-        return self.func(*args, **kwargs)
+        bound_args = self.signature.bind(*args, **kwargs).arguments
+        inputs = self.args_schema(**bound_args)
+        return self.func(**inputs.model_dump())
 
     @property
     def api_doc(self) -> dict:
