@@ -16,6 +16,13 @@ from pydantic import Field
 from pydantic import create_model
 
 
+def _get_name(func: callable) -> str:
+    if hasattr(func, '__name__'):
+        return func.__name__
+    else:
+        return func.__class__.__name__
+
+
 def annotations_to_schema(func: callable) -> BaseModel:
     """Construct function argument model from type annotation.
 
@@ -59,7 +66,7 @@ def annotations_to_schema(func: callable) -> BaseModel:
         param_specs[param.name] = (type_, Field(default, description=desc))
 
     # my_func => MyFuncModel
-    name_blocks = func.__name__.split('_')
+    name_blocks = _get_name(func).split('_')
     model_name = '_' + ''.join([block.capitalize() for block in name_blocks]) + 'Model'
 
     return create_model(model_name, **param_specs)
@@ -109,7 +116,7 @@ class Tool:
                  args_schema: Optional[type[BaseModel]] = None
                 ) -> None:
         self.func = func
-        self.name = name or func.__name__
+        self.name = name or _get_name(func)
         self.description = description or func.__doc__
 
         if args_schema is None:
