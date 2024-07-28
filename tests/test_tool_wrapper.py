@@ -20,3 +20,9 @@ class TestTool:
         ret = tool(10, 20)
         assert ret == 30
 
+        # api doc
+        api_doc = tool.api_doc['function']
+        assert api_doc['name'] == 'add_numbers'
+        assert api_doc['description'] == 'Calculate a + b'
+        assert api_doc['parameters']['properties']['a']['type'] == 'integer'
+        assert api_doc['parameters']['properties']['b']['type'] == 'integer'
