@@ -92,7 +92,7 @@ def construct_tool_doc(name: str,
     props = schema['properties']
     props = _remove_key_recursively(props, key='title')
 
-    return {
+    doc = {
         'type': 'function',
         'function': {
             'name': name,
@@ -100,10 +100,12 @@ def construct_tool_doc(name: str,
             'parameters': {
                 'type': 'object',
                 'properties': props,
-                'required': schema['required'],
             }
         }
     }
+    if props:
+        doc['function']['parameters']['required'] = schema['required']
+    return doc
 
 
 class Tool:
